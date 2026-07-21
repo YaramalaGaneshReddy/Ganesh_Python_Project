@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.id }} Details | Staff Portal{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb navigation -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fw-bold mb-1"><i class="fa-solid fa-file-invoice text-emerald me-2"></i>Order #{{ order.id }}</h1>
+        <p class="text-secondary mb-0">Placed on {{ order.created_at|date:"F j, Y \a\t g:i A" }}</p>
+    </div>
+    <a href="{% url 'staff:order_list' %}" class="btn btn-outline-dark fw-semibold">
+        <i class="fa-solid fa-arrow-left me-1.5"></i> Back to Orders List
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Order Summary & Itemized List -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+            <div class="card-header bg-white border-0 py-3 px-4 fw-bold fs-5 border-bottom">
+                <i class="fa-solid fa-basket-shopping me-2 text-emerald"></i>Ordered Items
+            </div>
+            <div class="table-responsive">
+                <table class="table table-align-middle mb-0">
+                    <thead class="table-light text-uppercase font-size-sm">
+                        <tr>
+                            <th class="ps-4 py-3">Product</th>
+                            <th class="py-3">Unit Price</th>
+                            <th class="py-3 text-center">Quantity</th>
+                            <th class="pe-4 py-3 text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                            <tr>
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-light rounded overflow-hidden me-3" style="width: 50px; height: 50px; min-width: 50px;">
+                                            {% if item.product and item.product.image %}
+                                                <img src="{{ item.product.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ item.product.name }}">
+                                            {% else %}
+                                                <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-secondary-subtle text-secondary">
+                                                    <i class="fa-solid fa-image"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">
+                                                {% if item.product %}
+                                                    <a href="{% url 'products:product_detail' item.product.id %}" target="_blank" class="text-dark text-decoration-none">{{ item.product.name }}</a>
+                                                {% else %}
+                                                    <span class="text-muted fs-6">Deleted Product</span>
+                                                {% endif %}
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3 fw-semibold text-secondary">${{ item.price }}</td>
+                                <td class="py-3 text-center fw-bold">{{ item.quantity }}</td>
+                                <td class="pe-4 py-3 text-end fw-bold text-emerald">${{ item.get_cost }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="3" class="ps-4 py-3 fw-bold text-end fs-5">Total Order Value:</td>
+                            <td class="pe-4 py-3 fw-extrabold text-end text-emerald fs-4">${{ order.total_price }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Customer Info & Status Switcher Card -->
+    <div class="col-lg-4">
+        <!-- Status Switcher Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-pen-to-square me-2 text-emerald"></i>Update Order Status</h5>
+            
+            <div class="mb-3">
+                <small class="text-secondary fw-semibold d-block mb-1">Current Status</small>
+                {% if order.status == 'Pending' %}
+                    <span class="badge bg-warning-light text-warning border border-warning px-3 py-2 fs-6">Pending</span>
+                {% elif order.status == 'Paid' %}
+                    <span class="badge bg-info-light text-info border border-info px-3 py-2 fs-6">Paid</span>
+                {% elif order.status == 'Shipped' %}
+                    <span class="badge bg-primary-light text-primary border border-primary px-3 py-2 fs-6">Shipped</span>
+                {% elif order.status == 'Delivered' %}
+                    <span class="badge bg-success-light text-success border border-success px-3 py-2 fs-6">Delivered</span>
+                {% endif %}
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="{{ form.status.id_for_label }}" class="form-label fw-bold">Change Status to:</label>
+                    {{ form.status }}
+                </div>
+                <button type="submit" class="btn btn-emerald w-100 py-2.5 fw-bold">
+                    <i class="fa-solid fa-floppy-disk me-1.5"></i> Save Status Change
+                </button>
+            </form>
+        </div>
+
+        <!-- Customer & Shipping Details Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-light">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-truck-ramp-box me-2 text-muted"></i>Customer & Shipping</h5>
+            
+            <div class="mb-3">
+                <small class="text-muted d-block">Customer Name</small>
+                <span class="fw-bold text-dark">{{ order.first_name }} {{ order.last_name }}</span>
+            </div>
+
+            <div class="mb-3">
+                <small class="text-muted d-block">Account Username</small>
+                <span class="fw-semibold text-dark"><i class="fa-solid fa-user me-1 text-muted"></i> {{ order.user.username }}</span>
+            </div>
+
+            <div class="mb-3">
+                <small class="text-muted d-block">Email Address</small>
+                <a href="mailto:{{ order.email }}" class="text-emerald fw-semibold text-decoration-none"><i class="fa-solid fa-envelope me-1"></i> {{ order.email }}</a>
+            </div>
+
+            <div class="mb-0">
+                <small class="text-muted d-block">Shipping Address</small>
+                <div class="fw-semibold text-dark">{{ order.address }}</div>
+                <div class="text-secondary">{{ order.city }}, {{ order.postal_code }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

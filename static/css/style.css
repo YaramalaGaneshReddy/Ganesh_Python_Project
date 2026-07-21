@@ -1,0 +1,232 @@
+/* MARWADI SALES Custom Style Sheet */
+:root {
+    --primary: #10b981; /* Emerald */
+    --primary-hover: #059669;
+    --primary-light: #ecfdf5;
+    --dark: #0f172a; /* Slate 900 */
+    --dark-light: #1e293b; /* Slate 800 */
+    --light-bg: #f8fafc; /* Slate 50 */
+    --body-text: #334155; /* Slate 700 */
+    --heading-text: #0f172a;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--body-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--heading-text);
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: var(--dark) !important;
+    border-bottom: 2px solid var(--primary);
+    padding: 0.8rem 0;
+}
+.navbar-brand {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+.brand-text {
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(to right, #ffffff, var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.brand-emoji {
+    font-size: 1.7rem;
+}
+.navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.2s ease;
+}
+.navbar-nav .nav-link:hover, 
+.navbar-nav .nav-link.active {
+    color: var(--primary) !important;
+}
+
+/* User Dropdown */
+.user-dropdown {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-radius: 30px;
+    padding: 0.4rem 1.2rem !important;
+}
+.user-dropdown:after {
+    vertical-align: 0.15em;
+}
+
+/* Custom Buttons */
+.btn-emerald {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+.btn-emerald:hover, 
+.btn-emerald:focus, 
+.btn-emerald:active {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    color: white !important;
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+}
+.btn-outline-emerald {
+    color: var(--primary);
+    border-color: var(--primary);
+    background-color: transparent;
+    font-weight: 600;
+}
+.btn-outline-emerald:hover {
+    color: white;
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+.btn-outline-light.nav-btn {
+    border-radius: 8px;
+    font-weight: 600;
+    border-width: 2px;
+}
+.btn-outline-light.nav-btn:hover {
+    background-color: white;
+    color: var(--dark);
+}
+
+/* Badges custom colors */
+.bg-emerald {
+    background-color: var(--primary) !important;
+    color: white;
+}
+.bg-emerald-light {
+    background-color: var(--primary-light) !important;
+    color: var(--primary) !important;
+}
+.bg-danger-light {
+    background-color: #fef2f2 !important;
+    color: #ef4444 !important;
+}
+.bg-warning-light {
+    background-color: #fffbeb !important;
+    color: #d97706 !important;
+}
+.bg-success-light {
+    background-color: #f0fdf4 !important;
+    color: #16a34a !important;
+}
+.bg-info-light {
+    background-color: #f0f9ff !important;
+    color: #0284c7 !important;
+}
+
+/* Hero Banner */
+.banner-hero {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--dark-light) 100%);
+    border-bottom: 4px solid var(--primary);
+}
+.banner-gradient-shape {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+    top: -50px;
+    right: -50px;
+}
+.fw-extrabold {
+    font-weight: 800;
+}
+
+/* Card Styling */
+.card {
+    border-radius: 16px;
+    background-color: #ffffff;
+}
+.product-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--hover-shadow) !important;
+}
+.card-img-wrapper img {
+    transition: transform 0.5s ease;
+}
+.product-card:hover .card-img-wrapper img {
+    transform: scale(1.06);
+}
+
+/* Detail Image Container */
+.detail-image-card {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+}
+
+/* Custom Text Ellipsis (Multi-line truncate) */
+.text-line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+
+/* Forms styling */
+.auth-card {
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1.5px solid #cbd5e1;
+    padding: 0.6rem 0.9rem;
+    transition: all 0.25s ease;
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15);
+}
+
+/* Table Design */
+.table-align-middle td, .table-align-middle th {
+    vertical-align: middle;
+}
+.table {
+    border-color: #f1f5f9;
+}
+
+/* Footer Styling */
+footer {
+    background-color: var(--dark);
+    border-top: 1px solid var(--dark-light);
+}
+
+/* Transition Utilities */
+.transition-all {
+    transition-property: all;
+}
+.duration-300 {
+    transition-duration: 300ms;
+}
+.duration-500 {
+    transition-duration: 500ms;
+}
+.z-index-2 {
+    position: relative;
+    z-index: 2;
+}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | MARWADI SALES{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb bg-light p-3 rounded-3 shadow-sm mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'products:home' %}" class="text-emerald text-decoration-none"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+    </ol>
+</nav>
+
+<div class="row g-5">
+    <!-- Product Image -->
+    <div class="col-md-6 col-lg-5">
+        <div class="card border-0 shadow-sm overflow-hidden bg-light detail-image-card">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" class="w-100 h-auto object-fit-contain" alt="{{ product.name }}" style="max-height: 450px;">
+            {% else %}
+                <div class="d-flex flex-column align-items-center justify-content-center bg-secondary-subtle text-secondary text-center py-5" style="min-height: 350px;">
+                    <i class="fa-solid fa-image fs-1 mb-3"></i>
+                    <span class="fw-medium">No Image Available</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Product Details -->
+    <div class="col-md-6 col-lg-7">
+        <div class="d-flex flex-column h-100">
+            <!-- Badges -->
+            <div class="mb-3">
+                {% if product.stock > 0 %}
+                    <span class="badge bg-emerald-light text-emerald px-3 py-2 fw-semibold fs-6"><i class="fa-solid fa-circle-check me-1"></i> In Stock ({{ product.stock }} available)</span>
+                {% else %}
+                    <span class="badge bg-danger-light text-danger px-3 py-2 fw-semibold fs-6"><i class="fa-solid fa-circle-xmark me-1"></i> Out of Stock</span>
+                {% endif %}
+            </div>
+
+            <h1 class="display-5 fw-bold mb-2">{{ product.name }}</h1>
+            <p class="text-emerald fw-bold display-6 mb-4">${{ product.price }}</p>
+            
+            <div class="card border-0 bg-light p-4 rounded-4 mb-4 shadow-sm">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-align-left me-2 text-muted"></i>Description</h5>
+                <p class="text-secondary leading-relaxed mb-0" style="white-space: pre-line;">
+                    {{ product.description }}
+                </p>
+            </div>
+
+            <!-- Actions Form -->
+            <div class="mt-auto">
+                {% if product.stock > 0 %}
+                    <form method="POST" action="{% url 'cart:cart_add' product.id %}" class="row g-3 align-items-center">
+                        {% csrf_token %}
+                        <div class="col-4 col-sm-3 col-md-4 col-lg-3">
+                            <label for="quantity" class="form-label small fw-bold text-uppercase text-secondary">Quantity</label>
+                            <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control border-2 border-emerald py-2 fw-semibold text-center">
+                        </div>
+                        <div class="col-8 col-sm-9 col-md-8 col-lg-9 d-grid">
+                            <label class="form-label d-none d-sm-block opacity-0">Add to Cart</label>
+                            <button type="submit" class="btn btn-emerald btn-lg py-2.5 fw-bold mt-sm-2">
+                                <i class="fa-solid fa-cart-plus me-2"></i> Add to Shopping Cart
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-0" role="alert">
+                        <i class="fa-solid fa-bell-slash fs-5 me-2"></i>
+                        <div>This item is currently out of stock and cannot be added. Please check back later.</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
