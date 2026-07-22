@@ -11,3 +11,4 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ('status', 'created_at', 'updated_at')
     search_fields = ('first_name', 'last_name', 'email', 'address', 'city')
     inlines = [OrderItemInline]
+    
