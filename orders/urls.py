@@ -7,4 +7,5 @@ urlpatterns = [
     path('checkout/', views.order_create, name='order_create'),
     path('history/', views.order_history, name='order_history'),
     path('<int:order_id>/', views.order_detail, name='order_detail'),
+    path('chatbot/', views.chatbot_api, name='chatbot_api'),
 ]

@@ -74,3 +74,20 @@ def order_history(request):
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'orders/order_detail.html', {'order': order})
+
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .chatbot import process_rag_query
+
+@csrf_exempt
+def chatbot_api(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            message = data.get('message', '')
+            response = process_rag_query(request.user, message)
+            return JsonResponse(response)
+        except Exception:
+            return JsonResponse({"reply": "Sorry, an error occurred processing your query.", "action": "error"}, status=400)
+    return JsonResponse({"error": "POST method required"}, status=405)

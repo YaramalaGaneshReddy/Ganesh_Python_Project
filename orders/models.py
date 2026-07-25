@@ -8,6 +8,7 @@ class Order(models.Model):
         ('Paid', 'Paid'),
         ('Shipped', 'Shipped'),
         ('Delivered', 'Delivered'),
+        ('Cancelled', 'Cancelled'),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
