@@ -80,10 +80,20 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+import os
+import shutil
+
+if os.environ.get('VERCEL'):
+    db_path = '/tmp/db.sqlite3'
+    if not os.path.exists(db_path):
+        shutil.copyfile(BASE_DIR / 'db.sqlite3', db_path)
+else:
+    db_path = BASE_DIR / 'db.sqlite3'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': db_path,
     }
 }
 
