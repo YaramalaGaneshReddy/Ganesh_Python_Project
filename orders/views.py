@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 from cart.models import Cart
 from cart.views import get_or_create_cart
 from .models import Order, OrderItem
@@ -16,6 +19,8 @@ def order_create(request):
 
     if request.method == 'POST':
         form = OrderCreateForm(request.POST)
+        payment_method = request.POST.get('payment_method', 'card')
+        
         if form.is_valid():
             try:
                 with transaction.atomic():
@@ -31,6 +36,13 @@ def order_create(request):
                     else:
                         order.user = None
                     order.total_price = cart.get_total_price()
+                    
+                    # Set payment status
+                    if payment_method in ['card', 'upi']:
+                        order.status = 'Paid'
+                    else:
+                        order.status = 'Pending'
+                        
                     order.save()
 
                     # Create Order Items and update stock
@@ -53,7 +65,7 @@ def order_create(request):
                     else:
                         request.session['session_cart'] = {}
                         
-                messages.success(request, "Your order has been placed successfully!")
+                messages.success(request, f"Your order #{order.id} has been placed successfully ({'Paid Online' if order.status == 'Paid' else 'Cash on Delivery'})!")
                 return redirect('orders:order_detail', order_id=order.id)
             except ValueError as e:
                 messages.error(request, str(e))
@@ -79,15 +91,26 @@ def order_history(request):
     return render(request, 'orders/order_history.html', {'orders': orders})
 
 def order_detail(request, order_id):
-    if request.user.is_authenticated:
-        order = get_object_or_404(Order, id=order_id)
-    else:
-        order = get_object_or_404(Order, id=order_id)
+    order = get_object_or_404(Order, id=order_id)
     return render(request, 'orders/order_detail.html', {'order': order})
 
-import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+def verify_payment(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            order_id = data.get('order_id')
+            payment_method = data.get('payment_method', 'Online Payment')
+            
+            order = get_object_or_404(Order, id=order_id)
+            order.status = 'Paid'
+            order.save()
+            
+            return JsonResponse({"status": "success", "message": f"Payment via {payment_method} verified!", "order_id": order.id})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+    return JsonResponse({"error": "POST required"}, status=405)
+
 from .chatbot import process_rag_query
 
 @csrf_exempt

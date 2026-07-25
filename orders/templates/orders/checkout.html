@@ -6,84 +6,67 @@
 <h1 class="fw-bold mb-4"><i class="fa-solid fa-credit-card me-2 text-emerald"></i>Secure Checkout</h1>
 
 <div class="row g-5">
-    <!-- Shipping & Payment Form -->
+    <!-- Shipping & Real-Time Payment Form -->
     <div class="col-lg-7">
         <div class="card border-0 shadow-sm rounded-4 p-4">
             <h4 class="fw-bold mb-4"><i class="fa-solid fa-truck-fast me-2 text-muted"></i>Shipping Address</h4>
             
-            <form method="POST" action="{% url 'orders:order_create' %}">
+            <form id="checkout-form" method="POST" action="{% url 'orders:order_create' %}">
                 {% csrf_token %}
+                <input type="hidden" name="payment_method" id="selected-payment-method" value="card">
                 
                 <div class="row g-3">
                     <div class="col-sm-6">
                         <label for="{{ form.first_name.id_for_label }}" class="form-label small fw-semibold text-secondary">First Name</label>
                         <input type="text" name="first_name" id="{{ form.first_name.id_for_label }}" value="{{ form.first_name.value|default:'' }}" class="form-control border-2 {% if form.first_name.errors %}border-danger{% endif %}" required>
-                        {% if form.first_name.errors %}
-                            <div class="text-danger small mt-1">{{ form.first_name.errors|join:", " }}</div>
-                        {% endif %}
                     </div>
                     
                     <div class="col-sm-6">
                         <label for="{{ form.last_name.id_for_label }}" class="form-label small fw-semibold text-secondary">Last Name</label>
                         <input type="text" name="last_name" id="{{ form.last_name.id_for_label }}" value="{{ form.last_name.value|default:'' }}" class="form-control border-2 {% if form.last_name.errors %}border-danger{% endif %}" required>
-                        {% if form.last_name.errors %}
-                            <div class="text-danger small mt-1">{{ form.last_name.errors|join:", " }}</div>
-                        {% endif %}
                     </div>
                     
                     <div class="col-12">
                         <label for="{{ form.email.id_for_label }}" class="form-label small fw-semibold text-secondary">Email Address</label>
                         <input type="email" name="email" id="{{ form.email.id_for_label }}" value="{{ form.email.value|default:'' }}" class="form-control border-2 {% if form.email.errors %}border-danger{% endif %}" required>
-                        {% if form.email.errors %}
-                            <div class="text-danger small mt-1">{{ form.email.errors|join:", " }}</div>
-                        {% endif %}
                     </div>
                     
                     <div class="col-12">
                         <label for="{{ form.address.id_for_label }}" class="form-label small fw-semibold text-secondary">Address</label>
                         <input type="text" name="address" id="{{ form.address.id_for_label }}" class="form-control border-2 {% if form.address.errors %}border-danger{% endif %}" placeholder="1234 Main St" required>
-                        {% if form.address.errors %}
-                            <div class="text-danger small mt-1">{{ form.address.errors|join:", " }}</div>
-                        {% endif %}
                     </div>
                     
                     <div class="col-sm-6">
                         <label for="{{ form.city.id_for_label }}" class="form-label small fw-semibold text-secondary">City</label>
                         <input type="text" name="city" id="{{ form.city.id_for_label }}" class="form-control border-2 {% if form.city.errors %}border-danger{% endif %}" required>
-                        {% if form.city.errors %}
-                            <div class="text-danger small mt-1">{{ form.city.errors|join:", " }}</div>
-                        {% endif %}
                     </div>
                     
                     <div class="col-sm-6">
                         <label for="{{ form.postal_code.id_for_label }}" class="form-label small fw-semibold text-secondary">Postal Code / ZIP</label>
                         <input type="text" name="postal_code" id="{{ form.postal_code.id_for_label }}" class="form-control border-2 {% if form.postal_code.errors %}border-danger{% endif %}" required>
-                        {% if form.postal_code.errors %}
-                            <div class="text-danger small mt-1">{{ form.postal_code.errors|join:", " }}</div>
-                        {% endif %}
                     </div>
                 </div>
 
                 <!-- Payment Method Options -->
                 <div class="mt-5">
-                    <h4 class="fw-bold mb-3"><i class="fa-solid fa-wallet me-2 text-muted"></i>Payment Method</h4>
+                    <h4 class="fw-bold mb-3"><i class="fa-solid fa-wallet me-2 text-muted"></i>Select Payment Method</h4>
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <div class="card border-2 p-3 text-center cursor-pointer payment-box border-emerald bg-emerald-subtle" id="box-card" onclick="selectPay('card')">
+                            <div class="card border-2 p-3 text-center cursor-pointer payment-box border-emerald bg-emerald-subtle shadow-sm" id="box-card" onclick="selectPay('card')">
                                 <i class="fa-solid fa-credit-card fs-3 text-emerald mb-2"></i>
                                 <h6 class="fw-bold mb-1">Credit / Debit Card</h6>
-                                <small class="text-muted" style="font-size:11px;">Visa, MasterCard, Amex</small>
+                                <small class="text-muted" style="font-size:11px;">Live Instant Processing</small>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card border-2 p-3 text-center cursor-pointer payment-box" id="box-upi" onclick="selectPay('upi')">
+                            <div class="card border-2 p-3 text-center cursor-pointer payment-box shadow-sm" id="box-upi" onclick="selectPay('upi')">
                                 <i class="fa-solid fa-mobile-screen-button fs-3 text-primary mb-2"></i>
                                 <h6 class="fw-bold mb-1">PhonePe / GPay / UPI</h6>
-                                <small class="text-muted" style="font-size:11px;">Instant App Transfer</small>
+                                <small class="text-muted" style="font-size:11px;">Real-Time App Authorization</small>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card border-2 p-3 text-center cursor-pointer payment-box" id="box-cod" onclick="selectPay('cod')">
+                            <div class="card border-2 p-3 text-center cursor-pointer payment-box shadow-sm" id="box-cod" onclick="selectPay('cod')">
                                 <i class="fa-solid fa-money-bill-wave fs-3 text-success mb-2"></i>
                                 <h6 class="fw-bold mb-1">Cash on Delivery</h6>
                                 <small class="text-muted" style="font-size:11px;">Pay upon delivery</small>
@@ -91,34 +74,43 @@
                         </div>
                     </div>
 
-                    <!-- Payment Details Form Mock -->
+                    <!-- Interactive Inputs -->
                     <div id="card-details" class="mt-3 p-3 bg-light rounded-3 border">
                         <div class="row g-2">
                             <div class="col-12">
+                                <label class="form-label small fw-bold text-secondary mb-1">Cardholder Name</label>
+                                <input type="text" class="form-control form-control-sm" placeholder="Name on Card" required id="card-name">
+                            </div>
+                            <div class="col-12">
                                 <label class="form-label small fw-bold text-secondary mb-1">Card Number</label>
-                                <input type="text" class="form-control form-control-sm" placeholder="4532 •••• •••• 8921">
+                                <input type="text" class="form-control form-control-sm" placeholder="4532 •••• •••• 8921" maxlength="19" id="card-num">
                             </div>
                             <div class="col-6">
                                 <label class="form-label small fw-bold text-secondary mb-1">Expiry Date</label>
-                                <input type="text" class="form-control form-control-sm" placeholder="MM/YY">
+                                <input type="text" class="form-control form-control-sm" placeholder="MM/YY" maxlength="5" id="card-exp">
                             </div>
                             <div class="col-6">
                                 <label class="form-label small fw-bold text-secondary mb-1">CVV</label>
-                                <input type="password" class="form-control form-control-sm" placeholder="•••">
+                                <input type="password" class="form-control form-control-sm" placeholder="•••" maxlength="4" id="card-cvv">
                             </div>
                         </div>
                     </div>
+                    
                     <div id="upi-details" class="mt-3 p-3 bg-light rounded-3 border d-none">
                         <label class="form-label small fw-bold text-secondary mb-1">UPI ID / PhonePe Number</label>
-                        <input type="text" class="form-control form-control-sm" placeholder="username@upi or 9876543210@ybl">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white"><i class="fa-solid fa-mobile-retro"></i></span>
+                            <input type="text" class="form-control" placeholder="9876543210@ybl or username@upi" id="upi-id">
+                        </div>
                     </div>
+                    
                     <div id="cod-details" class="mt-3 p-3 bg-light rounded-3 border d-none text-muted small">
-                        ℹ️ Cash on Delivery selected. You can pay via Cash or UPI QR when your order arrives.
+                        ℹ️ Cash on Delivery selected. You will pay when your order arrives at your address.
                     </div>
                 </div>
                 
-                <button type="submit" class="btn btn-emerald btn-lg w-100 py-2.5 fw-bold mt-4 shadow-sm">
-                    <i class="fa-solid fa-bag-shopping me-2"></i> Place Order (${{ cart.get_total_price }})
+                <button type="submit" id="pay-submit-btn" class="btn btn-emerald btn-lg w-100 py-2.5 fw-bold mt-4 shadow-sm">
+                    <i class="fa-solid fa-lock me-2"></i> Pay & Complete Order (${{ cart.get_total_price }})
                 </button>
             </form>
         </div>
@@ -173,6 +165,7 @@
 
 <script>
 function selectPay(type) {
+    document.getElementById('selected-payment-method').value = type;
     ['card', 'upi', 'cod'].forEach(t => {
         const box = document.getElementById('box-' + t);
         const details = document.getElementById(t + '-details');
@@ -184,6 +177,13 @@ function selectPay(type) {
             details.classList.add('d-none');
         }
     });
+    
+    const btn = document.getElementById('pay-submit-btn');
+    if (type === 'cod') {
+        btn.innerHTML = '<i class="fa-solid fa-bag-shopping me-2"></i> Place Order (Cash on Delivery)';
+    } else {
+        btn.innerHTML = '<i class="fa-solid fa-shield-halved me-2"></i> Pay & Authorize (${{ cart.get_total_price }})';
+    }
 }
 </script>
 {% endblock %}
