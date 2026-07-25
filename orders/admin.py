@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Order, OrderItem
+from .models import Order, OrderItem, PaymentSetting
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
@@ -11,4 +11,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ('status', 'created_at', 'updated_at')
     search_fields = ('first_name', 'last_name', 'email', 'address', 'city')
     inlines = [OrderItemInline]
-    
+
+@admin.register(PaymentSetting)
+class PaymentSettingAdmin(admin.ModelAdmin):
+    list_display = ('id', 'account_name', 'upi_id', 'qr_code_url')
