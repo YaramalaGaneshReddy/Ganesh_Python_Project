@@ -3,16 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
 from cart.models import Cart
+from cart.views import get_or_create_cart
 from .models import Order, OrderItem
 from .forms import OrderCreateForm
 
-@login_required(login_url='accounts:login')
 def order_create(request):
-    try:
-        cart = Cart.objects.get(user=request.user)
-    except Cart.DoesNotExist:
-        messages.error(request, "Your cart is empty.")
-        return redirect('products:home')
+    cart = get_or_create_cart(request)
 
     if cart.items.count() == 0:
         messages.error(request, "Your cart is empty.")
@@ -30,7 +26,10 @@ def order_create(request):
 
                     # Save Order
                     order = form.save(commit=False)
-                    order.user = request.user
+                    if request.user.is_authenticated:
+                        order.user = request.user
+                    else:
+                        order.user = None
                     order.total_price = cart.get_total_price()
                     order.save()
 
@@ -46,9 +45,14 @@ def order_create(request):
                         item.product.stock -= item.quantity
                         item.product.save()
 
-                    # Clear the cart items
-                    cart.items.all().delete()
-                    
+                    # Clear cart
+                    if request.user.is_authenticated:
+                        user_cart = Cart.objects.filter(user=request.user).first()
+                        if user_cart:
+                            user_cart.items.all().delete()
+                    else:
+                        request.session['session_cart'] = {}
+                        
                 messages.success(request, "Your order has been placed successfully!")
                 return redirect('orders:order_detail', order_id=order.id)
             except ValueError as e:
@@ -60,8 +64,12 @@ def order_create(request):
         else:
             messages.error(request, "Please correct the shipping details errors.")
     else:
-        # Prepopulate email if logged in
-        form = OrderCreateForm(initial={'email': request.user.email})
+        initial_data = {}
+        if request.user.is_authenticated:
+            initial_data['email'] = request.user.email
+            initial_data['first_name'] = request.user.first_name
+            initial_data['last_name'] = request.user.last_name
+        form = OrderCreateForm(initial=initial_data)
 
     return render(request, 'orders/checkout.html', {'cart': cart, 'form': form})
 
@@ -70,9 +78,11 @@ def order_history(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'orders/order_history.html', {'orders': orders})
 
-@login_required(login_url='accounts:login')
 def order_detail(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if request.user.is_authenticated:
+        order = get_object_or_404(Order, id=order_id)
+    else:
+        order = get_object_or_404(Order, id=order_id)
     return render(request, 'orders/order_detail.html', {'order': order})
 
 import json
