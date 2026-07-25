@@ -197,3 +197,37 @@ def staff_payment_settings(request):
         return redirect('staff:payment_settings')
 
     return render(request, 'staff/payment_settings.html', {'setting': setting})
+
+@user_passes_test(is_staff_check, login_url='accounts:login')
+def staff_user_detail(request, pk):
+    target_user = get_object_or_404(User, pk=pk)
+    user_orders = Order.objects.filter(user=target_user).order_by('-created_at')
+    total_spent = user_orders.aggregate(Sum('total_price'))['total_price__sum'] or 0.00
+    
+    return render(request, 'staff/user_detail.html', {
+        'target_user': target_user,
+        'user_orders': user_orders,
+        'total_spent': total_spent,
+    })
+
+@user_passes_test(is_staff_check, login_url='accounts:login')
+def staff_database_summary(request):
+    db_metrics = {
+        'total_users': User.objects.count(),
+        'total_products': Product.objects.count(),
+        'total_orders': Order.objects.count(),
+        'total_order_items': OrderItem.objects.count(),
+        'total_revenue': Order.objects.aggregate(Sum('total_price'))['total_price__sum'] or 0.00,
+        'paid_orders_count': Order.objects.filter(status='Paid').count(),
+        'pending_orders_count': Order.objects.filter(status='Pending').count(),
+        'shipped_orders_count': Order.objects.filter(status='Shipped').count(),
+        'cancelled_orders_count': Order.objects.filter(status='Cancelled').count(),
+    }
+    recent_users = User.objects.all().order_by('-date_joined')[:10]
+    recent_orders = Order.objects.all().order_by('-created_at')[:10]
+    
+    return render(request, 'staff/database_summary.html', {
+        'db_metrics': db_metrics,
+        'recent_users': recent_users,
+        'recent_orders': recent_orders,
+    })

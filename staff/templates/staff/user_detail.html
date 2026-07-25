@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}User Details - {{ target_user.username }} | Staff Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="fa-solid fa-id_card text-emerald me-2"></i>User Profile: {{ target_user.username }}</h2>
+        <p class="text-secondary small mb-0">Detailed view of user activity, total spent, and order history.</p>
+    </div>
+    <a href="{% url 'staff:user_list' %}" class="btn btn-outline-secondary btn-sm fw-semibold">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Users
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <div class="text-center mb-4">
+                <div class="bg-emerald-light text-emerald rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-2" style="width:70px; height:70px;">
+                    <i class="fa-solid fa-user-gear fs-2"></i>
+                </div>
+                <h4 class="fw-bold mb-0">{{ target_user.username }}</h4>
+                <span class="badge {% if target_user.is_staff %}bg-emerald{% else %}bg-secondary{% endif %} mt-1">
+                    {% if target_user.is_superuser %}Admin / Superuser{% elif target_user.is_staff %}Staff Member{% else %}Customer{% endif %}
+                </span>
+            </div>
+
+            <div class="border-top pt-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-secondary small">Email:</span>
+                    <span class="fw-semibold small text-truncate" style="max-width:180px;">{{ target_user.email|default:"No Email" }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-secondary small">Joined Date:</span>
+                    <span class="fw-semibold small">{{ target_user.date_joined|date:"M d, Y" }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-secondary small">Total Orders:</span>
+                    <span class="fw-bold text-dark">{{ user_orders.count }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-secondary small">Total Spent:</span>
+                    <span class="fw-bold text-emerald fs-6">${{ total_spent }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-receipt me-2 text-muted"></i>Order History</h5>
+            {% if user_orders %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in user_orders %}
+                                <tr>
+                                    <td class="fw-bold">#{{ order.id }}</td>
+                                    <td class="small text-secondary">{{ order.created_at|date:"M d, Y" }}</td>
+                                    <td class="fw-bold text-emerald">${{ order.total_price }}</td>
+                                    <td>
+                                        <span class="badge {% if order.status == 'Paid' %}bg-success{% elif order.status == 'Shipped' %}bg-info{% elif order.status == 'Delivered' %}bg-emerald{% elif order.status == 'Cancelled' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                            {{ order.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'staff:order_detail' order.id %}" class="btn btn-sm btn-outline-dark">View</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4 text-secondary">
+                    <i class="fa-solid fa-box-open fs-2 mb-2"></i>
+                    <p class="mb-0">This user has not placed any orders yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

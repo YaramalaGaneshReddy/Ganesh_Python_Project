@@ -31,7 +31,9 @@
                 {% for u in users %}
                     <tr>
                         <td class="ps-4 py-3 fw-bold text-dark">
-                            <i class="fa-solid fa-circle-user me-2 text-muted"></i>{{ u.username }}
+                            <a href="{% url 'staff:user_detail' u.id %}" class="text-emerald text-decoration-none">
+                                <i class="fa-solid fa-circle-user me-2 text-muted"></i>{{ u.username }}
+                            </a>
                             {% if u == request.user %}
                                 <span class="badge bg-secondary ms-1">You</span>
                             {% endif %}

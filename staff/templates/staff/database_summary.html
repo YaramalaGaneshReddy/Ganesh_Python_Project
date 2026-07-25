@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Database & Order Analytics | Staff Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="fa-solid fa-database text-emerald me-2"></i>Database & Order Summary Hub</h2>
+        <p class="text-secondary mb-0">Full analytics overview of system tables, customer records, and order breakdown.</p>
+    </div>
+    <a href="{% url 'staff:dashboard' %}" class="btn btn-outline-dark btn-sm fw-semibold mt-2 mt-md-0">
+        <i class="fa-solid fa-chart-line me-1"></i> Staff Dashboard
+    </a>
+</div>
+
+<!-- Metrics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">TOTAL REVENUE</span>
+                    <h3 class="fw-extrabold text-emerald mb-0">${{ db_metrics.total_revenue }}</h3>
+                </div>
+                <div class="p-3 bg-emerald-light text-emerald rounded-circle fs-4">
+                    <i class="fa-solid fa-sack-dollar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">TOTAL ORDERS</span>
+                    <h3 class="fw-extrabold text-dark mb-0">{{ db_metrics.total_orders }}</h3>
+                </div>
+                <div class="p-3 bg-primary-subtle text-primary rounded-circle fs-4">
+                    <i class="fa-solid fa-boxes-packing"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">TOTAL USERS</span>
+                    <h3 class="fw-extrabold text-dark mb-0">{{ db_metrics.total_users }}</h3>
+                </div>
+                <div class="p-3 bg-info-subtle text-info rounded-circle fs-4">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">TOTAL PRODUCTS</span>
+                    <h3 class="fw-extrabold text-dark mb-0">{{ db_metrics.total_products }}</h3>
+                </div>
+                <div class="p-3 bg-warning-subtle text-warning rounded-circle fs-4">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Status Breakdown -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-chart-pie me-2 text-muted"></i>Order Status Summary</h5>
+            <div class="d-flex flex-column gap-2">
+                <div class="d-flex justify-content-between p-2 rounded bg-light">
+                    <span class="fw-semibold text-success"><i class="fa-solid fa-circle-check me-1.5"></i> Paid Orders:</span>
+                    <span class="fw-bold">{{ db_metrics.paid_orders_count }}</span>
+                </div>
+                <div class="d-flex justify-content-between p-2 rounded bg-light">
+                    <span class="fw-semibold text-warning"><i class="fa-solid fa-clock me-1.5"></i> Pending Orders:</span>
+                    <span class="fw-bold">{{ db_metrics.pending_orders_count }}</span>
+                </div>
+                <div class="d-flex justify-content-between p-2 rounded bg-light">
+                    <span class="fw-semibold text-info"><i class="fa-solid fa-truck-fast me-1.5"></i> Shipped Orders:</span>
+                    <span class="fw-bold">{{ db_metrics.shipped_orders_count }}</span>
+                </div>
+                <div class="d-flex justify-content-between p-2 rounded bg-light">
+                    <span class="fw-semibold text-danger"><i class="fa-solid fa-ban me-1.5"></i> Cancelled Orders:</span>
+                    <span class="fw-bold">{{ db_metrics.cancelled_orders_count }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-users-viewfinder me-2 text-muted"></i>Recent Registered Users</h5>
+            <div class="list-group list-group-flush">
+                {% for u in recent_users %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <a href="{% url 'staff:user_detail' u.id %}" class="fw-bold text-emerald text-decoration-none">{{ u.username }}</a>
+                            <small class="text-muted d-block" style="font-size:11px;">{{ u.email|default:"No Email" }}</small>
+                        </div>
+                        <span class="badge bg-light text-dark border">{{ u.date_joined|date:"M d" }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
