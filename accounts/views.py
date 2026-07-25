@@ -3,6 +3,25 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .forms import UserRegisterForm
+from cart.models import Cart, CartItem
+from products.models import Product
+
+def merge_session_cart(request, user):
+    session_cart = request.session.get('session_cart', {})
+    if session_cart:
+        cart, _ = Cart.objects.get_or_create(user=user)
+        for prod_id_str, qty in session_cart.items():
+            try:
+                prod = Product.objects.get(id=int(prod_id_str))
+                cart_item, created = CartItem.objects.get_or_create(cart=cart, product=prod)
+                if created:
+                    cart_item.quantity = qty
+                else:
+                    cart_item.quantity += qty
+                cart_item.save()
+            except Exception:
+                pass
+        request.session['session_cart'] = {}
 
 def register_user(request):
     if request.user.is_authenticated:
@@ -32,8 +51,8 @@ def login_user(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                merge_session_cart(request, user)
                 messages.success(request, f"Welcome back, {username}!")
-                # Redirect to next parameter if exists
                 next_page = request.GET.get('next')
                 if next_page:
                     return redirect(next_page)
