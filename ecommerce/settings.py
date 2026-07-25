@@ -29,8 +29,13 @@ ALLOWED_HOSTS = ['*', '.vercel.app', 'ganesh-python-project-3ts9.vercel.app']
 
 CSRF_TRUSTED_ORIGINS = ['https://*.vercel.app', 'https://ganesh-python-project-3ts9.vercel.app']
 
+# Vercel HTTPS SSL Header & Signed Cookie Configuration
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_AGE = 86400 * 30  # 30 days
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_HTTPONLY = True
 
 
 # Application definition
