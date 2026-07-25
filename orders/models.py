@@ -40,9 +40,9 @@ class OrderItem(models.Model):
         return self.price * self.quantity
 
 class PaymentSetting(models.Model):
-    upi_id = models.CharField(max_length=100, default="marwadi.sales@upi")
-    account_name = models.CharField(max_length=100, default="MARWADI SALES OFFICIAL")
-    qr_code_url = models.TextField(default="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=marwadi.sales@upi&pn=MARWADI%20SALES")
+    upi_id = models.CharField(max_length=100, default="centralbank9361@ybl")
+    account_name = models.CharField(max_length=100, default="Central Bank - 9361 (PhonePe)")
+    qr_code_url = models.TextField(default="/static/images/phonepe_qr_scanner.jpg")
 
     def __str__(self):
         return f"Payment Settings ({self.upi_id})"

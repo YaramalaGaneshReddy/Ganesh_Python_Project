@@ -15,16 +15,16 @@ def get_payment_setting():
         setting = PaymentSetting.objects.first()
         if not setting:
             setting = PaymentSetting.objects.create(
-                upi_id="marwadi.sales@upi",
-                account_name="MARWADI SALES OFFICIAL",
-                qr_code_url="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=marwadi.sales@upi&pn=MARWADI%20SALES"
+                upi_id="centralbank9361@ybl",
+                account_name="Central Bank - 9361 (PhonePe)",
+                qr_code_url="/static/images/phonepe_qr_scanner.jpg"
             )
         return setting
     except Exception:
         class DummySetting:
-            upi_id = "marwadi.sales@upi"
-            account_name = "MARWADI SALES OFFICIAL"
-            qr_code_url = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=marwadi.sales@upi&pn=MARWADI%20SALES"
+            upi_id = "centralbank9361@ybl"
+            account_name = "Central Bank - 9361 (PhonePe)"
+            qr_code_url = "/static/images/phonepe_qr_scanner.jpg"
         return DummySetting()
 
 def order_create(request):
