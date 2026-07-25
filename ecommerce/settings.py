@@ -27,6 +27,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*', '.vercel.app', 'ganesh-python-project-3ts9.vercel.app']
 
+CSRF_TRUSTED_ORIGINS = ['https://*.vercel.app', 'https://ganesh-python-project-3ts9.vercel.app']
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_AGE = 86400 * 30  # 30 days
+
 
 # Application definition
 
