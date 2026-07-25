@@ -38,3 +38,11 @@ class OrderItem(models.Model):
 
     def get_cost(self):
         return self.price * self.quantity
+
+class PaymentSetting(models.Model):
+    upi_id = models.CharField(max_length=100, default="marwadi.sales@upi")
+    account_name = models.CharField(max_length=100, default="MARWADI SALES OFFICIAL")
+    qr_code_url = models.TextField(default="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=marwadi.sales@upi&pn=MARWADI%20SALES")
+
+    def __str__(self):
+        return f"Payment Settings ({self.upi_id})"

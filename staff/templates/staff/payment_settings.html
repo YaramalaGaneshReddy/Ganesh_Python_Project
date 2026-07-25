@@ -1,0 +1,62 @@
+{% extends 'staff/base_staff.html' %}
+
+{% block title %}Payment QR Settings | Staff Portal{% endblock %}
+
+{% block staff_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="fa-solid fa-qrcode text-emerald me-2"></i>Admin Payment QR Scanner Settings</h2>
+        <p class="text-secondary small mb-0">Configure your store's UPI ID, QR Code Scanner image, and business account name for checkout.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-gear me-2 text-muted"></i>QR Payment Configurations</h5>
+            
+            <form method="POST" action="{% url 'staff:payment_settings' %}">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-secondary">Merchant / Account Name</label>
+                    <input type="text" name="account_name" value="{{ setting.account_name }}" class="form-control border-2" placeholder="MARWADI SALES OFFICIAL" required>
+                    <small class="text-muted" style="font-size:11px;">Displayed to customers above the QR scanner.</small>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-secondary">Admin UPI ID</label>
+                    <input type="text" name="upi_id" value="{{ setting.upi_id }}" class="form-control border-2" placeholder="marwadi.sales@upi" required>
+                    <small class="text-muted" style="font-size:11px;">Your PhonePe / GPay / Paytm UPI ID.</small>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-secondary">QR Scanner Image URL</label>
+                    <input type="text" name="qr_code_url" value="{{ setting.qr_code_url }}" class="form-control border-2" placeholder="https://api.qrserver.com/..." required>
+                    <small class="text-muted" style="font-size:11px;">URL to your custom QR Code scanner image.</small>
+                </div>
+                
+                <button type="submit" class="btn btn-emerald btn-lg w-100 fw-bold shadow-sm">
+                    <i class="fa-solid fa-floppy-disk me-2"></i> Save Payment Settings
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-light text-center">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-eye me-2 text-muted"></i>Live Scanner Preview</h5>
+            <p class="small text-secondary mb-3">This is how your Admin QR Payment Scanner appears to customers on the Checkout page:</p>
+            
+            <div class="bg-white p-3 rounded-4 shadow-sm border d-inline-block mx-auto mb-3">
+                <img src="{{ setting.qr_code_url }}" alt="Admin QR Scanner" class="img-fluid rounded" style="max-width: 220px; height: auto;">
+            </div>
+            
+            <div class="bg-white p-2.5 rounded-3 border text-start">
+                <p class="mb-1 small"><strong>Account:</strong> {{ setting.account_name }}</p>
+                <p class="mb-0 small"><strong>UPI ID:</strong> <code class="text-emerald fs-6">{{ setting.upi_id }}</code></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

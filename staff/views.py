@@ -172,3 +172,28 @@ def staff_toggle_user(request, pk):
             status_str = "granted" if user.is_staff else "revoked"
             messages.success(request, f"Staff privileges {status_str} for user '{user.username}'.")
     return redirect('staff:user_list')
+
+from orders.models import PaymentSetting
+
+@user_passes_test(is_staff_check, login_url='accounts:login')
+def staff_payment_settings(request):
+    try:
+        setting = PaymentSetting.objects.first()
+        if not setting:
+            setting = PaymentSetting.objects.create(
+                upi_id="marwadi.sales@upi",
+                account_name="MARWADI SALES OFFICIAL",
+                qr_code_url="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=marwadi.sales@upi&pn=MARWADI%20SALES"
+            )
+    except Exception:
+        setting = None
+
+    if request.method == 'POST' and setting:
+        setting.upi_id = request.POST.get('upi_id', setting.upi_id)
+        setting.account_name = request.POST.get('account_name', setting.account_name)
+        setting.qr_code_url = request.POST.get('qr_code_url', setting.qr_code_url)
+        setting.save()
+        messages.success(request, "Admin Payment QR Scanner settings updated successfully!")
+        return redirect('staff:payment_settings')
+
+    return render(request, 'staff/payment_settings.html', {'setting': setting})

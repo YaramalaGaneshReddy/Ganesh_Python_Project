@@ -7,8 +7,25 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from cart.models import Cart
 from cart.views import get_or_create_cart
-from .models import Order, OrderItem
+from .models import Order, OrderItem, PaymentSetting
 from .forms import OrderCreateForm
+
+def get_payment_setting():
+    try:
+        setting = PaymentSetting.objects.first()
+        if not setting:
+            setting = PaymentSetting.objects.create(
+                upi_id="marwadi.sales@upi",
+                account_name="MARWADI SALES OFFICIAL",
+                qr_code_url="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=marwadi.sales@upi&pn=MARWADI%20SALES"
+            )
+        return setting
+    except Exception:
+        class DummySetting:
+            upi_id = "marwadi.sales@upi"
+            account_name = "MARWADI SALES OFFICIAL"
+            qr_code_url = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=marwadi.sales@upi&pn=MARWADI%20SALES"
+        return DummySetting()
 
 def order_create(request):
     cart = get_or_create_cart(request)
@@ -83,7 +100,8 @@ def order_create(request):
             initial_data['last_name'] = request.user.last_name
         form = OrderCreateForm(initial=initial_data)
 
-    return render(request, 'orders/checkout.html', {'cart': cart, 'form': form})
+    payment_setting = get_payment_setting()
+    return render(request, 'orders/checkout.html', {'cart': cart, 'form': form, 'payment_setting': payment_setting})
 
 @login_required(login_url='accounts:login')
 def order_history(request):
